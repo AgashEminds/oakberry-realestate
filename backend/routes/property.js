@@ -4,7 +4,7 @@ const express=require('express')
 
 const router=express.Router()
 
-router.post('/addproperty',authenticateToken,addProperty)
+router.post('/addproperty',addProperty)
 router.get('/getproperty',authenticateToken,getproperty)
 
 module.exports=router;

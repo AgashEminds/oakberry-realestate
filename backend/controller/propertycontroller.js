@@ -65,7 +65,7 @@ exports.getproperty = async (req, res) => {
     }
 
     if (propertyType) {
-      filter.propertyType = saleStatus; // Ensure propertyType is a valid field in your model
+      filter.saleStatus = propertyType; // Ensure propertyType is a valid field in your model
     }
 
     if (location) {
@@ -81,6 +81,7 @@ exports.getproperty = async (req, res) => {
       "property_agent",
       "username images"
     );
+    console.log(properties)
 
     res.status(200).json(properties);
   } catch (err) {

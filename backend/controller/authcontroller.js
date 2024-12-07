@@ -6,8 +6,10 @@ const jwt = require("jsonwebtoken");
 
 exports.register = async (req, res) => {
   const { username, password, email,images } = req.body;
+  console.log(req.body)
   try {
     let user = await Users.findOne({ email });
+    console.log(user)
     if (user) {
       return res.status(400).json({ msg: "User already exists" });
     }
@@ -32,12 +34,15 @@ exports.register = async (req, res) => {
 
 exports.login = async (req, res) => {
   const { username, password } = req.body;
+  console.log(req.body)
 
   try {
     const user = await Users.findOne({ username });
+    console.log(user)
     if (!user) {
       return res.status(400).json({ msg: "Invalid credentials" });
     }
+    console.log(user.password)
 
     const decryptedPassword = decryptData(user.password);
     console.log(decryptedPassword);
@@ -47,10 +52,10 @@ exports.login = async (req, res) => {
 
     const payload = { user: user._id };
     const token = jwt.sign(payload, privatekey, {
-      expiresIn: "30s",
+      expiresIn: "30m",
     });
     const refreshToken = jwt.sign(payload, refreshkey, {
-      expiresIn: "2m",
+      expiresIn: "60m",
     });
 
     res.json({ token, refreshToken });
