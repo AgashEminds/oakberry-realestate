@@ -1,9 +1,9 @@
 import axios from "axios";
 const axiosinstance = axios.create({
-	baseURL: "http://localhost:5555/api",
+	baseURL: "http://localhost:8000/api",
 });
 const secureinstance = axios.create({
-	baseURL: "http://localhost:5555/api",
+	baseURL: "http://localhost:8000/api",
 	headers: {
 		"Content-Type": "application/json",
 		"ngrok-skip-browser-warning": "true", // Bypass the ngrok browser warning
@@ -37,7 +37,7 @@ secureinstance.interceptors.response.use(
 			if (refreshtoken) {
 				try {
 					const response = await axios.post(
-						"http://192.168.30.68:5555/api/token/refresh",
+						"http://localhost:8000/api/refresh/refresh",
 						{
 							token: refreshtoken,
 						}

@@ -3,6 +3,7 @@ import "./Login.css";
 import Button from "../../Component/Button/Button";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
+import { axiosinstance } from "../../Interceptor/Interceptor";
 
 function Login() {
 	const navigate = useNavigate();
@@ -13,24 +14,22 @@ function Login() {
 
 	const usernameChange = (e) => setUsername(e.target.value);
 	const passwordChange = (e) => setPassword(e.target.value);
-	useEffect(() => {
-		const Token = localStorage.getItem("Token");
-		if (Token) {
-			navigate("/");
-		}
-	}, [navigate]);
+	
 
 	const handleLogin = async () => {
+		console.log(username,password)
 		try {
-			const response = await axios.post(
-				"http://localhost:5555/api/auth/login",
+			const response = await axiosinstance.post(
+				"/auth/login",
 				{
 					username,
 					password,
 				}
+				
 			);
+			console.log(response)
 			localStorage.setItem("Token", response.data.token);
-			localStorage.setItem("RefreshToken", response.data.refreshtoken);
+			localStorage.setItem("RefreshToken", response.data.refreshToken);
 			navigate("/");
 
 			setSuccess(response.data.message);

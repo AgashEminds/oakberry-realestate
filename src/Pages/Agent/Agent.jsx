@@ -11,7 +11,7 @@ const Agent = () => {
 	useEffect(() => {
 		const fetchAgent = async () => {
 			try {
-				const response = await secureinstance.get("/auth/getagent");
+				const response = await secureinstance.get("/agent/getagent");
 				console.log(response.data); // Log the data to verify its structur
 				setagentdetail(response.data); // Set the data from the response
 			} catch (err) {

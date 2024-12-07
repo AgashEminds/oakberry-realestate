@@ -16,20 +16,15 @@ import { useNavigate } from "react-router-dom";
 import {secureinstance} from "../../Interceptor/Interceptor";
 
 function Home() {
-	const navigate = useNavigate();
-	useEffect(() => {
-		const Token = localStorage.getItem("Token");
-		// if (!Token) {
-		// 	navigate("/login");
-		// }
-	}, [navigate]);
+	
+	
 	const [agentdetails, setagentdetail] = useState([]);
 
 	useEffect(() => {
 		const fetchAgent = async () => {
 			try {
-				const response = await secureinstance.get("/auth/getagent");
-				console.log(response.data); // Log the data to verify its structur
+				const response = await secureinstance.get("/agent/getagent");
+				console.log(response.data); // Log the data to verify its structure
 				setagentdetail(response.data); // Set the data from the response
 			} catch (err) {
 				console.log("Error fetching agent details:", err.message);
@@ -183,9 +178,10 @@ function Home() {
 							{agentdetails
 								.slice(0, 4)
 								.map((agentdetail, index) =>
-									agentdetail.propertiesCount >= 1 ? (
+									// agentdetail.propertiesCount >= 1 ? 
+								(
 										<Agent_Card key={index} agent={agentdetail} />
-									) : null
+									) 
 								)}
 						</div>
 					</div>

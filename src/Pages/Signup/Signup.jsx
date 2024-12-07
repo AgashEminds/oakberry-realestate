@@ -1,196 +1,169 @@
-import React, { useEffect, useState } from "react";
-import "./Signup.css";
-import "../Login/Login.css";
+import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import Button from "../../Component/Button/Button";
 import axios from "axios";
+import Button from "../../Component/Button/Button";
 import { axiosinstance } from "../../Interceptor/Interceptor";
+import "./Signup.css";
 
 function Register() {
-	const navigate = useNavigate();
-	const [agentid, setAgentId] = useState("");
-	const [name, setName] = useState("");
-	const [username, setUsername] = useState("");
-	const [usernameavail, setUsernameavail] = useState(null);
-	const [usernameloading, setUsernameloading] = useState(false);
-	const [password, setPassword] = useState("");
-	const [con_password, setConPassword] = useState("");
-	const [success, setSuccess] = useState(null);
-	const [error, setError] = useState(null);
-	const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+  const [email, setemail] = useState("");
+  const [username, setusername] = useState("");
+  const [password, setPassword] = useState("");
+  const [con_password, setConPassword] = useState("");
+  const [images, setimages] = useState(null); // For file input
+  const [imageUrl, setImageUrl] = useState(""); // To store the uploaded image URL
+  const [success, setSuccess] = useState(null);
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
 
-	useEffect(() => {
-		const storedAgentId = localStorage.getItem("agentid");
-		if (storedAgentId) {
-			navigate("/");
-		}
-	}, [navigate]);
+  const emailChange = (e) => setemail(e.target.value);
+  const nameChange = (e) => setusername(e.target.value);
+  const passwordChange = (e) => setPassword(e.target.value);
+  const con_passwordChange = (e) => setConPassword(e.target.value);
 
-	const agentidChange = (e) => setAgentId(e.target.value);
-	const nameChange = (e) => setName(e.target.value);
-	const passwordChange = (e) => setPassword(e.target.value);
-	const con_passwordChange = (e) => setConPassword(e.target.value);
+  const handleFileChange = (e) => {
+    const selectedFile = e.target.files[0]; // Get the selected file
+    setimages(selectedFile);
+  };
 
-	useEffect(() => {
-		if (!username) {
-			setUsernameavail(null);
-			return;
-		}
+  // Step 1: Upload the image and get the URL
+  const uploadImage = async () => {
+    if (!images) {
+      throw new Error("Please upload an image.");
+    }
 
-		const timeoutId = setTimeout(() => {
-			checkusername(username);
-		}, 500); // 500ms delay
+    const formData = new FormData();
+    formData.append("file", images); // Append the image file
 
-		return () => clearTimeout(timeoutId);
-	}, [username]);
+    const response = await axios.post("http://localhost:8000/images", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    console.log(response.data.imageUrl)
 
-	const checkusername = async (usernameavailable) => {
-		setUsernameloading(true);
-		setUsernameavail(null); // Clear previous state
-		try {
-			const response = await axiosinstance.post(
-				"/auth/checkusername",
-				{ username: usernameavailable }
-			);
-			if (response.status === 200) {
-				setUsernameavail("Available");
-			} else if (response.status === 201) {
-				setUsernameavail("Not Available");
-			}
-		} catch (err) {
-			console.error("Error checking username:", err);
-			setUsernameavail("Error checking availability");
-		} finally {
-			setUsernameloading(false);
-		}
-	};
+    return response.data.imageUrl; // Return the uploaded image URL
+  };
 
-	const handlesignup = async () => {
-		if (password !== con_password) {
-			setError("Passwords do not match.");
-			return;
-		}
+  // Step 2: Register user with image URL and other form data
+  const handlesignup = async () => {
+    if (password !== con_password) {
+      setError("Passwords do not match.");
+      return;
+    }
 
-		setLoading(true);
-		setError(null);
-		setSuccess(null);
+    setLoading(true);
+    setError(null);
+    setSuccess(null);
 
-		try {
-			const response = await axiosinstance.post(
-				"/auth/add_user", // Updated endpoint to register
-				{ agentid, name, username, password }
-			);
-			setSuccess(response.data.message);
-			navigate("/");
-		} catch (err) {
-			console.log(`Error uploading the User Details`, err);
-			setError(err.response ? err.response.data.error : "Server error");
-		} finally {
-			setLoading(false);
-		}
-	};
-	const handlekey = (e) => {
-		if (e.key === "Enter") {
-			e.preventDefault();
-			handlesignup();
-		}
-	};
+    try {
+      // Upload the image first and get the URL
+      const uploadedImageUrl = await uploadImage();
 
-	return (
-		<div className="parent_register">
-			<div className="signup_content">
-				<h1>
-					<i className="fa-solid fa-cash-register fa-bounce"></i>
-					<p>Join Our Club</p>
-				</h1>
-				<div className="all_details_signup">
-					<div className="signup_input">
-						<input
-							type="text"
-							id="agentid"
-							placeholder=""
-							required
-							value={agentid}
-							onChange={agentidChange}
-							onKeyDown={handlekey}
-						/>
-						<label htmlFor="agentid">Agent ID</label>
-					</div>
-					<div className="signup_input">
-						<input
-							type="text"
-							id="name"
-							placeholder=""
-							required
-							value={name}
-							onChange={nameChange}
-							onKeyDown={handlekey}
-						/>
-						<label htmlFor="name">Name</label>
-					</div>
-					<div className="signup_input">
-						<input
-							type="text"
-							id="username"
-							placeholder=" "
-							required
-							value={username}
-							onChange={(e) => setUsername(e.target.value)}
-							style={{
-								color: usernameloading
-									? "black" // Default color during loading
-									: usernameavail === "Available"
-									? "green" // Green if available
-									: usernameavail === "Not Available"
-									? "red" // Red if not available
-									: "black", // Fallback color
-							}}
-						/>
-						<label htmlFor="username">Username</label>
-					</div>
+      setImageUrl(uploadedImageUrl);
 
-					<div className="signup_input">
-						<input
-							type="password"
-							id="password"
-							placeholder=" "
-							required
-							value={password}
-							onChange={passwordChange}
-							onKeyDown={handlekey}
-						/>
-						<label htmlFor="password">Password</label>
-					</div>
-					<div className="signup_input">
-						<input
-							type="password"
-							id="con_password"
-							placeholder=" "
-							required
-							value={con_password}
-							onChange={con_passwordChange}
-							onKeyDown={handlekey}
-						/>
-						<label htmlFor="con_password">Confirm Password</label>
-					</div>
-					<div className="signup_bt">
-						<Button
-							onClick={handlesignup}
-							text={loading ? "Signing Up..." : "Signup"}
-							disabled={loading}
-						/>
-					</div>
-					<p>
-						If you have an account <Link to="/login">Click Here</Link>
-					</p>
-					<div>
-						{error && <div style={{ color: "red" }}>{error}</div>}
-						{success && <div style={{ color: "green" }}>{success}</div>}
-					</div>
-				</div>
-			</div>
-		</div>
-	);
+      // Register user with form data and image URL
+      const response = await axiosinstance.post("/auth/register", {
+        username,
+        email,
+        password,
+        images: uploadedImageUrl,
+      });
+
+      setSuccess(response.data.message || "Registration successful!");
+      navigate("/");
+    } catch (err) {
+      console.log("Error during signup:", err);
+      setError(err.response ? err.response.data.error : "Server error");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="parent_register">
+      <div className="signup_content">
+        <h1>
+          <i className="fa-solid fa-cash-register fa-bounce"></i>
+          <p>Join Our Club</p>
+        </h1>
+        <div className="all_details_signup">
+          <div className="signup_input">
+            <input
+              type="text"
+              id="name"
+              placeholder=""
+              required
+              value={username}
+              onChange={nameChange}
+            />
+            <label htmlFor="name">Name</label>
+          </div>
+
+          <div className="signup_input">
+            <input
+              type="email"
+              id="email"
+              placeholder=" "
+              required
+              value={email}
+              onChange={emailChange}
+            />
+            <label htmlFor="email">Email</label>
+          </div>
+
+          <div className="signup_input">
+            <input
+              type="password"
+              id="password"
+              placeholder=" "
+              required
+              value={password}
+              onChange={passwordChange}
+            />
+            <label htmlFor="password">Password</label>
+          </div>
+
+          <div className="signup_input">
+            <input
+              type="password"
+              id="con_password"
+              placeholder=" "
+              required
+              value={con_password}
+              onChange={con_passwordChange}
+            />
+            <label htmlFor="con_password">Confirm Password</label>
+          </div>
+
+          <div className="signup_input">
+            <input
+              type="file"
+              id="image"
+              required
+              onChange={handleFileChange}
+            />
+          </div>
+
+          <div className="signup_bt">
+            <Button
+              onClick={handlesignup}
+              text={loading ? "Signing Up..." : "Signup"}
+              disabled={loading}
+            />
+          </div>
+          <p>
+            If you have an account <Link to="/login">Click Here</Link>
+          </p>
+          <div>
+            {error && <div style={{ color: "red" }}>{error}</div>}
+            {success && <div style={{ color: "green" }}>{success}</div>}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 }
 
 export default Register;

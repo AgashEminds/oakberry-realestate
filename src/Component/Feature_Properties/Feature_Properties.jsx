@@ -8,7 +8,8 @@ function Feature_Properties() {
 	useEffect(() => {
 		const fetchProperties = async () => {
 			try {
-				const response = await secureinstance.get("property/get_all_property");
+				const response = await secureinstance.get("/property/getproperty");
+				console.log(response)
 				setProperties(response.data.slice(0, 4));
 			} catch (error) {
 				console.error("Error fetching properties:", error);

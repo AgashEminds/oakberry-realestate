@@ -13,11 +13,12 @@ function Properties_Page() {
 	const [Properties, setProperties] = useState([]);
 	useEffect(() => {
 		const fetchProperties = async () => {
+			const params = Object.fromEntries([...searchParams]);
 			try {
 				const response = await secureinstance.get(
-					"/property/get_all_property",
+					"/property/getproperty",
 					{
-						params: Object.fromEntries(searchParams),
+						params
 					}
 				);
 				setProperties(response.data);
@@ -28,7 +29,7 @@ function Properties_Page() {
 		fetchProperties();
 	}, [searchParams]); // Add searchParams to the dependency array
 
-	console.log(Properties);
+	console.log(".......",Properties);
 
 	const [currentPage, setCurrentPage] = useState(1);
 	const propertiesPerPage = 8;

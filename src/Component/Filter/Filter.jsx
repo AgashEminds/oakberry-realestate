@@ -4,107 +4,117 @@ import { CiSearch } from "react-icons/ci";
 import { FaAngleDown } from "react-icons/fa6";
 import { IoLocationOutline } from "react-icons/io5";
 import Button from "../Button/Button";
-import { useNavigate, NavLink, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 function Filter() {
-	const navigate = useNavigate();
-	const [search, setsearch] = useState({
-		keyword: "",
-		type: "",
-		location: "",
-		price: "",
-	});
-	const handleSearch = (e) => {
-		const { name, value } = e.target;
-		setsearch((prevState) => ({
-			...prevState,
-			[name]: value,
-		}));
-	};
-	const handleSearchClick = () => {
-		const query = new URLSearchParams(search).toString();
-		navigate(`/properties?${query}`);
-	};
+  const navigate = useNavigate();
 
-	const filter = async () => {
-		const response = await axios.get(
-			"http://127.0.0.1:5555/api/property/get_all_property",
-			{ params: search }
-		);
-	};
+  // Define the state for the search parameters
+  const [keyword, setKeyword] = useState("");
+  const [propertyType, setPropertyType] = useState("");
+  const [location, setLocation] = useState("");
+  const [priceLimit, setPriceLimit] = useState("");
 
-	return (
-		<div className="filter ">
-			<div className="bt">
-				<NavLink to="/agent" activeClassName="active_bt">
-					<Button text="Buy Properties" />
-				</NavLink>
-				<NavLink to="/login" activeClassName="active_bt">
-					<Button text="Rent Properties" />
-				</NavLink>
-			</div>
-			<div className="searchbar container">
-				<div className="option">
-					<p className="mb-0">Enter Keyword</p>
-					<div>
-						<CiSearch />
-						<input
-							type="text"
-							name="keyword"
-							value={search.keyword}
-							id="keyword"
-							onChange={handleSearch}
-							placeholder="Enter Keyword"></input>
-					</div>
-				</div>
-				<div className="option">
-					<p className="mb-0">Property_Type</p>
-					<div>
-						<select
-							name="type"
-							value={search.type}
-							id="type"
-							onChange={handleSearch}
-							required>
-							<option value="">Select Type</option>
-							<option value="Sale">Sale</option>
-							<option value="Rent">Rent</option>
-						</select>
-					</div>
-				</div>
-				<div className="option">
-					<p className="mb-0">Location</p>
-					<div>
-						<IoLocationOutline />
-						<input
-							type="text"
-							name="location"
-							value={search.location}
-							id="location"
-							onChange={handleSearch}
-							placeholder="Enter Location"></input>
-					</div>
-				</div>
-				<div className="option prlt">
-					<p className="mb-0">Price Limit</p>
-					<div>
-						<FaAngleDown />
-						<input
-							type="text"
-							name="price"
-							value={search.price}
-							id="price"
-							onChange={handleSearch}
-							placeholder="Enter Price"></input>
-					</div>
-				</div>
-				<button onClick={handleSearchClick} className="option Search">
-					SEARCH
-				</button>
-			</div>
-		</div>
-	);
+  // Handle the change in input fields and update the state
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    if (name === "keyword") {
+      setKeyword(value);
+    } else if (name === "propertyType") {
+      setPropertyType(value);
+    } else if (name === "location") {
+      setLocation(value);
+    } else if (name === "priceLimit") {
+      setPriceLimit(value);
+    }
+  };
+
+  // Handle the search button click, construct query parameters, and navigate to the results page
+  const handleSearchClick = () => {
+    const params = new URLSearchParams({
+      ...(keyword && { keyword }),
+      ...(propertyType && { propertyType }),
+      ...(location && { location }),
+      ...(priceLimit && { priceLimit }),
+    }).toString();
+
+    // Navigate to the properties page with the search parameters
+    navigate(`/properties?${params}`);
+  };
+
+  return (
+    <div className="filter">
+      <div className="bt">
+        <Button text="Buy Properties" />
+        <Button text="Rent Properties" />
+      </div>
+
+      <div className="searchbar container">
+        <div className="option">
+          <p className="mb-0">Enter Keyword</p>
+          <div>
+            <CiSearch />
+            <input
+              type="text"
+              name="keyword"
+              value={keyword}
+              onChange={handleInputChange}
+              placeholder="Enter Keyword"
+            />
+          </div>
+        </div>
+
+        <div className="option">
+          <p className="mb-0">Property Type</p>
+          <div>
+            <select
+              name="propertyType"
+              value={propertyType}
+              onChange={handleInputChange}
+              required
+            >
+              <option value="">Select Type</option>
+              <option value="Sale">Sale</option>
+              <option value="Rent">Rent</option>
+            </select>
+          </div>
+        </div>
+
+        <div className="option">
+          <p className="mb-0">Location</p>
+          <div>
+            <IoLocationOutline />
+            <input
+              type="text"
+              name="location"
+              value={location}
+              onChange={handleInputChange}
+              placeholder="Enter Location"
+            />
+          </div>
+        </div>
+
+        <div className="option prlt">
+          <p className="mb-0">Price Limit</p>
+          <div>
+            <FaAngleDown />
+            <input
+              type="text"
+              name="priceLimit"
+              value={priceLimit}
+              onChange={handleInputChange}
+              placeholder="Enter Price"
+            />
+          </div>
+        </div>
+
+        <button onClick={handleSearchClick} className="option Search">
+          SEARCH
+        </button>
+      </div>
+    </div>
+  );
 }
 
 export default Filter;

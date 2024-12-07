@@ -5,25 +5,25 @@ function Agent_Card({ agent }) {
 	return (
 		<div className="Agent_card_parent">
 			<div className="agent_img">
-				<img src={agent.picture} alt={agent.name} />
+				<img src={agent.images} alt={agent.name} />
 			</div>
 			<div className="Agent_card_detail">
 				<div className="count">
 					<p>LISTING</p>
-					<p>{agent.propertiesCount} Properties</p>
+					<p>{agent.property_list} Properties</p>
 				</div>
-				<h1>{agent.name}</h1>
+				<h1>{agent.username}</h1>
 				<div className="social">
-					<a href={agent.socialMedia.twitter}>
+					<a href="#">
 						<i class="fa-brands fa-twitter"></i>
 					</a>
-					<a href={agent.socialMedia.facebook}>
+					<a href="#">
 						<i class="fa-brands fa-facebook"></i>
 					</a>
-					<a href={agent.socialMedia.gmail}>
+					<a href="#">
 						<i class="fa-brands fa-google"></i>
 					</a>
-					<a href={agent.socialMedia.facebook}>
+					<a href="#">
 						<i class="fa-brands fa-instagram"></i>
 					</a>
 				</div>
